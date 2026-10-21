@@ -104,6 +104,3 @@ The backend exposes the following REST API endpoints:
 This project was developed as a final requirement for a **Software Design** course. It demonstrates the practical application of System Analysis and Design, Database Management, Web Development, and API Integration to solve a real-world business problem for a local micro-entrepreneur.
 
 ---
-<p align="center">
-  <i>Developed with ❤️ for Princess Jane Marcial.</i>
-</p>
