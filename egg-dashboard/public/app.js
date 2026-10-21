@@ -91,9 +91,9 @@ async function fetchJson(url) {
 }
 
 function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-PH", { // Changed to en-PH for Philippine English formatting
     style: "currency",
-    currency: "USD"
+    currency: "PHP" // Changed to PHP
   }).format(value || 0);
 }
 
