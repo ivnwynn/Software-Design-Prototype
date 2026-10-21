@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EggTrack</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <p class="brand">🥚 EggTrack</p>
+      <h1 id="title">Inventory</h1>
+    </header>
+
+    <main>
+<section id="inventory" class="screen active">
+  <div class="hero">
+    <p>Current Stock</p>
+    <h2><span id="stock">0</span> <small>eggs</small></h2>
+  </div>
+  <div class="card">
+    <h3>Add Stock</h3>
+    <input id="addQty" type="number" min="1" placeholder="Quantity">
+    <button class="primary" onclick="addStock()">Add Stock</button>
+  </div>
+
+  <div class="card">
+    <h3>Quick Add</h3>
+    <div class="chips">
+      <button onclick="quickAdd(12)">+12</button>
+      <button onclick="quickAdd(30)">+30</button>
+      <button onclick="quickAdd(60)">+60</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Recent Activity</h3>
+    <ul id="recent"></ul>
+  </div>
+</section>
+
+<section id="sales" class="screen">
+  <div class="card">
+    <h3>Record Sale</h3>
+    <input id="saleQty" type="number" min="1" placeholder="Quantity">
+    <input id="salePrice" type="number" min="0" step="0.01" placeholder="Price per egg (₱)">
+    <button class="primary" onclick="recordSale()">Save Sale</button>
+    <p id="msg"></p>
+  </div>
+</section>
+
+<section id="reports" class="screen">
+  <div class="stats">
+    <div class="stat"><span id="totalSold">0</span><p>Eggs Sold</p></div>
+    <div class="stat"><span id="revenue">₱0</span><p>Revenue</p></div>
+    <div class="stat"><span id="count">0</span><p>Records</p></div>
+  </div>
+  <div class="card">
+    <h3>Activity Log</h3>
+    <ul id="history"></ul>
+    <button class="ghost" onclick="resetData()">Reset Data</button>
+  </div>
+</section>
+</main>
+
+    <nav>
+      <button class="on" onclick="show('inventory', this)">
+        <svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+        <span>Inventory</span>
+      </button>
+      <button onclick="show('sales', this)">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l3 12h11l2-8H6"/></svg>
+        <span>Sales</span>
+      </button>
+      <button onclick="show('reports', this)">
+        <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span>Reports</span>
+      </button>
+    </nav>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

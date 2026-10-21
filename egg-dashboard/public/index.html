@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EggTrack — Egg Inventory & Sales</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i data-lucide="egg"></i>
+        </div>
+        <div>
+          <div class="brand-name">EggTrack</div>
+          <div class="brand-subtitle">Inventory & Sales</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-page="stock">
+          <i data-lucide="package"></i>
+          <span>Stock</span>
+        </button>
+
+        <button class="nav-item" data-page="sales">
+          <i data-lucide="receipt"></i>
+          <span>Sales</span>
+        </button>
+
+        <button class="nav-item" data-page="revenue">
+          <i data-lucide="chart-line"></i>
+          <span>Revenue</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="themeToggle" class="ghost-button">
+          <i data-lucide="moon"></i>
+          <span>Dark mode</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuToggle" class="icon-button mobile-only">
+          <i data-lucide="menu"></i>
+        </button>
+
+        <div>
+          <h1 id="pageTitle">Stock</h1>
+          <p id="pageSubtitle">Current inventory and stock-in history</p>
+        </div>
+
+        <div class="filter-group">
+          <div class="segmented" id="rangeSelector">
+            <button class="segment active" data-range="today">Today</button>
+            <button class="segment" data-range="7d">7 days</button>
+            <button class="segment" data-range="30d">30 days</button>
+            <button class="segment" data-range="custom">Custom</button>
+          </div>
+
+          <input type="date" id="fromDate" class="date-input" />
+          <input type="date" id="toDate" class="date-input" />
+        </div>
+      </header>
+
+      <section id="page-stock" class="page active">
+        <div class="kpi-grid">
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Current stock</span>
+              <span class="kpi-icon orange"><i data-lucide="package"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="stockSkeleton"></div>
+            <div class="kpi-value" id="currentStock">—</div>
+            <div class="kpi-trend up">
+              <i data-lucide="trending-up"></i>
+              <span>Available to sell</span>
+            </div>
+          </article>
+
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Stock-in records</span>
+              <span class="kpi-icon amber"><i data-lucide="layers"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="stockCountSkeleton"></div>
+            <div class="kpi-value" id="stockRecordCount">—</div>
+            <div class="kpi-trend neutral">
+              <i data-lucide="calendar"></i>
+              <span>In selected range</span>
+            </div>
+          </article>
+
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Latest delivery</span>
+              <span class="kpi-icon green"><i data-lucide="truck"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="latestStockSkeleton"></div>
+            <div class="kpi-value" id="latestStockQty">—</div>
+            <div class="kpi-trend neutral" id="latestStockDate">—</div>
+          </article>
+        </div>
+
+        <article class="card table-card">
+          <div class="card-header">
+            <div>
+              <h2>Stock-in history</h2>
+              <p>Every recorded delivery in the selected date range</p>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Quantity</th>
+                  <th>Record ID</th>
+                </tr>
+              </thead>
+              <tbody id="stockTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="stockEmpty" class="empty-state hidden">
+            <i data-lucide="package-open"></i>
+            <h3>No stock records</h3>
+            <p>Try selecting a wider date range.</p>
+          </div>
+        </article>
+      </section>
+
+      <section id="page-sales" class="page">
+        <article class="card table-card">
+          <div class="card-header">
+            <div>
+              <h2>Sales records</h2>
+              <p>Search, sort, paginate, and export transactions</p>
+            </div>
+
+            <div class="table-actions">
+              <div class="search-box">
+                <i data-lucide="search"></i>
+                <input
+                  type="search"
+                  id="salesSearch"
+                  placeholder="Search quantity, price, total, or date"
+                />
+              </div>
+
+              <button id="exportCsv" class="primary-button">
+                <i data-lucide="download"></i>
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="created_at">Date</th>
+                  <th>Time</th>
+                  <th class="sortable" data-sort="qty">Quantity</th>
+                  <th class="sortable" data-sort="price_per_egg">Price / egg</th>
+                  <th class="sortable" data-sort="total">Total</th>
+                </tr>
+              </thead>
+              <tbody id="salesTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="salesEmpty" class="empty-state hidden">
+            <i data-lucide="receipt-text"></i>
+            <h3>No sales found</h3>
+            <p>Adjust the filters or search query.</p>
+          </div>
+
+          <div class="pagination">
+            <button id="salesPrev" class="ghost-button">
+              <i data-lucide="chevron-left"></i>
+              Previous
+            </button>
+            <span id="salesPageInfo">Page 1 of 1</span>
+            <button id="salesNext" class="ghost-button">
+              Next
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </article>
+      </section>
+
+      <section id="page-revenue" class="page">
+        <div class="kpi-grid">
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Total revenue</span>
+              <span class="kpi-icon orange"><i data-lucide="banknote"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="revenueSkeleton"></div>
+            <div class="kpi-value" id="totalRevenue">—</div>
+            <div class="kpi-trend up">
+              <i data-lucide="trending-up"></i>
+              <span>Selected period</span>
+            </div>
+          </article>
+
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Eggs sold</span>
+              <span class="kpi-icon amber"><i data-lucide="egg"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="eggsSkeleton"></div>
+            <div class="kpi-value" id="eggsSold">—</div>
+            <div class="kpi-trend neutral">
+              <i data-lucide="shopping-basket"></i>
+              <span>Total quantity</span>
+            </div>
+          </article>
+
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Average sale</span>
+              <span class="kpi-icon green"><i data-lucide="calculator"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="averageSkeleton"></div>
+            <div class="kpi-value" id="averageSale">—</div>
+            <div class="kpi-trend neutral">
+              <i data-lucide="receipt"></i>
+              <span>Per transaction</span>
+            </div>
+          </article>
+
+          <article class="card kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">Best day</span>
+              <span class="kpi-icon blue"><i data-lucide="award"></i></span>
+            </div>
+            <div class="skeleton kpi-skeleton" id="bestSkeleton"></div>
+            <div class="kpi-value" id="bestDayRevenue">—</div>
+            <div class="kpi-trend neutral" id="bestDayLabel">—</div>
+          </article>
+        </div>
+
+        <article class="card chart-card">
+          <div class="card-header">
+            <div>
+              <h2>Revenue over time</h2>
+              <p>Group sales by day, week, or month</p>
+            </div>
+
+            <div class="segmented" id="groupSelector">
+              <button class="segment active" data-group="day">Day</button>
+              <button class="segment" data-group="week">Week</button>
+              <button class="segment" data-group="month">Month</button>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
